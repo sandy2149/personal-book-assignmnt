@@ -1,5 +1,7 @@
 package com.example.demo.google;
 
+import com.example.demo.constants.ErrorConstants;
+import com.example.demo.exception.CustomBusinessException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -35,23 +37,24 @@ public class GoogleBookService {
      *
      * @param id the unique identifier of the book volume in the Google Books API
      * @return a {@link GoogleBook.Item} representing the book details
-     *         associated with the given ID, or {@code null} if no book is found
-     *
-     * @throws org.springframework.web.reactive.function.client.WebClientResponseException
-     *         if the API call fails or returns an error response
-     * @throws IllegalArgumentException if the provided {@code id} is null or empty
-     *
+     * associated with the given ID, or {@code null} if no book is found
+     * @throws org.springframework.web.reactive.function.client.WebClientResponseException if the API call fails or returns an error response
+     * @throws IllegalArgumentException                                                    if the provided {@code id} is null or empty
      * @see GoogleBook.Item
      * @see <a href="https://developers.google.com/books/docs/v1/reference/volumes/get">
-     *      Google Books API - Volumes: get</a>
+     * Google Books API - Volumes: get</a>
      */
     public GoogleBook.Item getBookById(String id) {
-        return restClient.get()
-                .uri("/volumes/{id}", id)
-                .retrieve()
-                .body(GoogleBook.Item.class);
+        try {
+            return restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path("/volumes/{id}")
+                            .build(id))
+                    .retrieve()
+                    .body(GoogleBook.Item.class);
+        } catch (Exception ex) {
+            throw new CustomBusinessException(ErrorConstants.BOOK_NOT_FOUND);
+        }
     }
-
-
 }
 
