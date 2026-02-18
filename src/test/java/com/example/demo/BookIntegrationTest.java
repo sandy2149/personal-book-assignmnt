@@ -47,7 +47,7 @@ class BookIntegrationTest {
     }
 
     @Test
-    void shouldAddBookSuccessfully() throws Exception {
+    void addingBookSuccessfully() throws Exception {
 
         String mockGoogleResponse = """
                 {
@@ -71,14 +71,13 @@ class BookIntegrationTest {
                 .andExpect(jsonPath("$.author").value("Joshua Bloch"))
                 .andExpect(jsonPath("$.pageCount").value(416));
 
-        // verify persisted
         mockMvc.perform(get("/books"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
     }
 
     @Test
-    void shouldReturnBadRequestWhenGoogleReturnsInvalidData() throws Exception {
+    void returningBadRequestWhenGoogleReturnsInvalidData() throws Exception {
 
         mockWebServer.enqueue(new MockResponse()
                 .setBody("{}")
