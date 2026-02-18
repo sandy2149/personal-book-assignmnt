@@ -48,3 +48,61 @@ mandatory):
 You may refactor or add code as needed, but keep the existing structure.
 Aim to complete within 30 minutes.
 
+## Implementation Details
+
+The assignment requirements have been implemented as follows:
+
+### New Endpoint Implemented
+
+**POST /books/{googleId}**
+
+- Fetches book details from Google Books API using `/volumes/{id}`.
+- Maps relevant fields:
+  - id
+  - title
+  - first author
+  - pageCount
+- Persists book into H2 database.
+- Returns `201 Created` with persisted book.
+
+### Error Handling
+
+- Duplicate book → `400 Bad Request`
+- Invalid Google volume ID → `400 Bad Request`
+- Upstream 404 errors are converted into business exceptions.
+- Global exception handler ensures consistent API responses.
+
+### Existing Endpoints Preserved
+
+- `GET /books` returns all persisted books.
+- `GET /google?q={query}` returns upstream Google schema unchanged.
+
+### Integration Testing
+
+- Integration tests implemented using `@SpringBootTest`.
+- MockWebServer used to mock Google API for stable testing.
+- Database cleaned between tests.
+- Both happy path and error path covered.
+
+## How to Run
+
+### Build
+mvn clean install
+
+### Run
+Application runs at : http://localhost:8080
+
+### Add book
+POST /books/ka2VUBqHiWkC
+
+### Get all books
+GET /books
+
+### Search Google
+GET /google?q=effective+java
+
+## DB
+- H2 database is in-memory and resets on restart.
+- Google base URL configurable via:
+-    google.books.base-url
+
